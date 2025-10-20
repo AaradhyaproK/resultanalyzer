@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academic Result Analyzer</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+</head>
+<body>
+    <!-- Dynamic Island -->
+    <div class="dynamic-island">
+        <div class="island-content">
+            <div class="island-icon">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="island-text">
+                <span class="island-title">Academic Analyzer</span>
+                <span class="island-subtitle">Processing Ready</span>
+            </div>
+            <div class="island-controls">
+                <button class="island-btn" id="exportIsland">
+                    <i class="fas fa-file-export"></i>
+                </button>
+                <button class="island-btn" id="settingsIsland">
+                    <i class="fas fa-sliders-h"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="app-logo">
+                    <i class="fas fa-university"></i>
+                </div>
+                <h1>Academic Analyzer</h1>
+                <p class="app-subtitle">Performance Analytics</p>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-tab="input">
+                    <i class="fas fa-upload"></i>
+                    <span>Data Input</span>
+                </a>
+                <a href="#" class="nav-item" data-tab="results">
+                    <i class="fas fa-list-alt"></i>
+                    <span>Student Results</span>
+                    <span class="nav-badge" id="resultsCount">0</span>
+                </a>
+                <a href="#" class="nav-item" data-tab="analytics">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Performance Analytics</span>
+                </a>
+                <a href="#" class="nav-item" data-tab="export">
+                    <i class="fas fa-download"></i>
+                    <span>Data Export</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="system-stats">
+                    <div class="stat">
+                        <span class="stat-value" id="processedCount">0</span>
+                        <span class="stat-label">Processed</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value" id="successCount">0</span>
+                        <span class="stat-label">Successful</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value" id="failedCount">0</span>
+                        <span class="stat-label">Failed Students</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Input Tab -->
+            <div class="tab-content active" id="input-tab">
+                <div class="content-header">
+                    <h2>Data Input Methods</h2>
+                    <p>Upload PDF result files or paste result text for analysis</p>
+                </div>
+
+                <div class="input-cards">
+                    <!-- PDF Upload Card -->
+                    <div class="glass-card upload-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-file-pdf"></i>
+                            </div>
+                            <div>
+                                <h3>PDF Document Upload</h3>
+                                <p class="card-description">Upload multiple PDF result files</p>
+                            </div>
+                        </div>
+                        <div class="upload-area" id="uploadArea">
+                            <div class="upload-icon">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                            </div>
+                            <div class="upload-text">Drag & Drop PDF Files</div>
+                            <div class="upload-subtext">Maximum 200 files supported</div>
+                            <button class="modern-btn secondary" id="browseButton">
+                                <i class="fas fa-folder-open"></i> Browse Files
+                            </button>
+                            <input type="file" id="fileInput" class="file-input" accept=".pdf" multiple>
+                        </div>
+                        <div class="file-info" id="fileInfo">
+                            <i class="fas fa-info-circle"></i>
+                            <span>No files selected</span>
+                        </div>
+                    </div>
+
+                    <!-- Text Input Card -->
+                    <div class="glass-card text-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-paste"></i>
+                            </div>
+                            <div>
+                                <h3>Text Input</h3>
+                                <p class="card-description">Paste result data directly</p>
+                            </div>
+                        </div>
+                        <div class="text-inputs-container" id="textInputsContainer">
+                            <div id="textInputs">
+                                <textarea class="result-text" placeholder="Paste student result text here..."></textarea>
+                            </div>
+                        </div>
+                        <div class="text-controls">
+                            <button class="modern-btn secondary" id="addTextArea">
+                                <i class="fas fa-plus"></i> Add Text Area
+                            </button>
+                            <span class="text-count" id="textCount">1/200</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-bar">
+                    <button class="modern-btn primary large" id="parseButton">
+                        <i class="fas fa-cogs"></i> Process All Data
+                    </button>
+                    <button class="modern-btn secondary" id="clearAll">
+                        <i class="fas fa-broom"></i> Clear All
+                    </button>
+                </div>
+            </div>
+
+            <!-- Results Tab -->
+            <div class="tab-content" id="results-tab">
+                <div class="content-header">
+                    <h2>Student Results</h2>
+                    <p>Detailed view of parsed student performance data</p>
+                </div>
+
+                <div class="results-controls">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="Search students by name, seat number, or PRN...">
+                    </div>
+                    <div class="filters">
+                        <select id="sgpaFilter" class="modern-select">
+                            <option value="">All SGPA Ranges</option>
+                            <option value="9+">Excellent (9.0+)</option>
+                            <option value="8-9">Very Good (8.0-8.9)</option>
+                            <option value="7-8">Good (7.0-7.9)</option>
+                            <option value="6-7">Average (6.0-6.9)</option>
+                            <option value="0-6">Needs Improvement (Below 6.0)</option>
+                            <option value="no-pointer">Failed / No Pointer</option>
+                        </select>
+                        <select id="branchFilter" class="modern-select">
+                            <option value="">All Academic Programs</option>
+                            <option value="S.E.">Second Year (S.E.)</option>
+                            <option value="T.E.">Third Year (T.E.)</option>
+                            <option value="B.E.">Final Year (B.E.)</option>
+                        </select>
+                        <select id="sortOrder" class="modern-select">
+                            <option value="">Sort By</option>
+                            <option value="sgpa-high">SGPA: High to Low</option>
+                            <option value="sgpa-low">SGPA: Low to High</option>
+                            <option value="credits-high">Credits: High to Low</option>
+                            <option value="credits-low">Credits: Low to High</option>
+                            <option value="name-asc">Name: A to Z</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="results-container" id="resultsContainer">
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <h3>No Results Available</h3>
+                        <p>Process some student results to view them here</p>
+                    </div>
+                </div>
+
+                <div class="pagination">
+                    <button class="modern-btn secondary" id="prevPage" disabled>
+                        <i class="fas fa-chevron-left"></i> Previous
+                    </button>
+                    <span class="page-info" id="pageInfo">Page 1 of 1</span>
+                    <button class="modern-btn secondary" id="nextPage" disabled>
+                        Next <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Analytics Tab -->
+            <div class="tab-content" id="analytics-tab">
+                <div class="content-header">
+                    <h2>Performance Analytics</h2>
+                    <p>Comprehensive analysis of student performance metrics</p>
+                </div>
+                
+                <!-- Performance Overview -->
+                <div class="analytics-section">
+                    <h3 class="section-title">Performance Overview</h3>
+                    <div class="analytics-grid">
+                        <div class="glass-card stat-card">
+                            <div class="stat-icon primary">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>Average SGPA</h3>
+                                <div class="stat-value" id="avgSgpa">0.00</div>
+                                <div class="stat-change" id="sgpaTrend">Across all students</div>
+                            </div>
+                        </div>
+                        <div class="glass-card stat-card">
+                            <div class="stat-icon success">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>Total Students</h3>
+                                <div class="stat-value" id="totalStudents">0</div>
+                                <div class="stat-change" id="studentsTrend">Processed records</div>
+                            </div>
+                        </div>
+                        <div class="glass-card stat-card">
+                            <div class="stat-icon info">
+                                <i class="fas fa-credit-card"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>Average Credits</h3>
+                                <div class="stat-value" id="avgCredits">0</div>
+                                <div class="stat-change" id="creditsTrend">Per student</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Performance Distribution -->
+                <div class="analytics-section">
+                    <h3 class="section-title">Performance Distribution</h3>
+                    <div class="distribution-grid">
+                        <div class="glass-card distribution-card excellent">
+                            <div class="distribution-header">
+                                <i class="fas fa-crown"></i>
+                                <h4>Excellent</h4>
+                            </div>
+                            <div class="distribution-value" id="excellentCount">0</div>
+                            <div class="distribution-label">SGPA 9.0+</div>
+                            <div class="distribution-percentage" id="excellentPercent">0%</div>
+                        </div>
+                        <div class="glass-card distribution-card very-good">
+                            <div class="distribution-header">
+                                <i class="fas fa-star"></i>
+                                <h4>Very Good</h4>
+                            </div>
+                            <div class="distribution-value" id="veryGoodCount">0</div>
+                            <div class="distribution-label">SGPA 8.0-8.9</div>
+                            <div class="distribution-percentage" id="veryGoodPercent">0%</div>
+                        </div>
+                        <div class="glass-card distribution-card good">
+                            <div class="distribution-header">
+                                <i class="fas fa-thumbs-up"></i>
+                                <h4>Good</h4>
+                            </div>
+                            <div class="distribution-value" id="goodCount">0</div>
+                            <div class="distribution-label">SGPA 7.0-7.9</div>
+                            <div class="distribution-percentage" id="goodPercent">0%</div>
+                        </div>
+                        <div class="glass-card distribution-card average">
+                            <div class="distribution-header">
+                                <i class="fas fa-chart-bar"></i>
+                                <h4>Average</h4>
+                            </div>
+                            <div class="distribution-value" id="averageCount">0</div>
+                            <div class="distribution-label">SGPA 6.0-6.9</div>
+                            <div class="distribution-percentage" id="averagePercent">0%</div>
+                        </div>
+                        <div class="glass-card distribution-card needs-improvement">
+                            <div class="distribution-header">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <h4>Needs Improvement</h4>
+                            </div>
+                            <div class="distribution-value" id="needsImprovementCount">0</div>
+                            <div class="distribution-label">SGPA Below 6.0</div>
+                            <div class="distribution-percentage" id="needsImprovementPercent">0%</div>
+                        </div>
+                        <div class="glass-card distribution-card failed" class="stat">
+
+                            <div class="distribution-label">No Pointer / Failed</div>
+                            <div class="percent" id="failedPercent">0%</div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+
+
+                <!-- Performance Charts -->
+                <div class="analytics-section">
+                    <h3 class="section-title">Performance Metrics</h3>
+                    <div class="charts-grid">
+                        <div class="glass-card chart-card">
+                            <h4>SGPA Distribution</h4>
+                            <div class="chart-placeholder" id="sgpaChart">
+                                <div class="chart-bars">
+                                    <div class="chart-bar" data-range="9+">
+                                        <div class="bar-fill excellent" style="height: 0%"></div>
+                                        <span class="bar-label">9+</span>
+                                    </div>
+                                    <div class="chart-bar" data-range="8-9">
+                                        <div class="bar-fill very-good" style="height: 0%"></div>
+                                        <span class="bar-label">8-9</span>
+                                    </div>
+                                    <div class="chart-bar" data-range="7-8">
+                                        <div class="bar-fill good" style="height: 0%"></div>
+                                        <span class="bar-label">7-8</span>
+                                    </div>
+                                    <div class="chart-bar" data-range="6-7">
+                                        <div class="bar-fill average" style="height: 0%"></div>
+                                        <span class="bar-label">6-7</span>
+                                    </div>
+                                    <div class="chart-bar" data-range="0-6">
+                                        <div class="bar-fill needs-improvement" style="height: 0%"></div>
+                                        <span class="bar-label">0-6</span>
+                                    </div>
+                                    <div class="chart-bar" data-range="failed">
+                                        <div class="bar-fill failed" style="height: 0%"></div>
+                                        <span class="bar-label">Failed</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="glass-card chart-card">
+                            <h4>Performance Summary</h4>
+                            <div class="summary-stats">
+                                <div class="summary-item">
+                                    <span class="summary-label">Highest SGPA</span>
+                                    <span class="summary-value" id="highestSgpa">0.00</span>
+                                </div>
+                                <div class="summary-item">
+                                    <span class="summary-label">Lowest SGPA</span>
+                                    <span class="summary-value" id="lowestSgpa">0.00</span>
+                                </div>
+                                <div class="summary-item">
+                                    <span class="summary-label">Pass Percentage</span>
+                                    <span class="summary-value" id="passPercentage">0%</span>
+                                </div>
+                                <div class="summary-item">
+                                    <span class="summary-label">Topper Count</span>
+                                    <span class="summary-value" id="topperCount">0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Export Tab -->
+            <div class="tab-content" id="export-tab">
+                <div class="content-header">
+                    <h2>Data Export</h2>
+                    <p>Export analyzed data in various formats for reporting</p>
+                </div>
+                <div class="export-cards">
+                    <div class="glass-card export-card">
+                        <div class="export-icon">
+                            <i class="fas fa-file-csv"></i>
+                        </div>
+                        <h3>CSV Format</h3>
+                        <p>Export results as CSV spreadsheet for Excel analysis</p>
+                        <button class="modern-btn primary" id="exportCSV">
+                            <i class="fas fa-download"></i> Download CSV
+                        </button>
+                    </div>
+                    <div class="glass-card export-card">
+                        <div class="export-icon">
+                            <i class="fas fa-file-code"></i>
+                        </div>
+                        <h3>JSON Format</h3>
+                        <p>Export results as structured JSON data for developers</p>
+                        <button class="modern-btn primary" id="exportJSON">
+                            <i class="fas fa-download"></i> Download JSON
+                        </button>
+                    </div>
+                    <div class="glass-card export-card">
+                        <div class="export-icon">
+                            <i class="fas fa-file-pdf"></i>
+                        </div>
+                        <h3>Report PDF</h3>
+                        <p>Generate comprehensive performance report as PDF</p>
+                        <button class="modern-btn secondary" id="exportPDF">
+                            <i class="fas fa-download"></i> Generate Report
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Progress Overlay -->
+    <div class="progress-overlay" id="progressOverlay">
+        <div class="progress-modal">
+            <div class="progress-icon">
+                <i class="fas fa-spinner fa-spin"></i>
+            </div>
+            <h3>Processing Data</h3>
+            <p id="progressText">Initializing processing engine...</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+  <div class="footer-content">
+    <p class="system-name">Result Analysis System</p>
+    <p class="credits">
+      Developed by 
+      <a href="https://portfolioaaradhya.netlify.app/" target="_blank">Aaradhya Pathak</a>, 
+      <a href="https://github.com/johndoe" target="_blank">Sakshi Vishvakarma</a>, 
+      <a href="https://github.com/janedoe" target="_blank">Sakshi Waje</a>
+      <a href="https://github.com/janedoe" target="_blank">Rahul Chaudhari</a>
+
+    </p>
+    <p class="copyright">© 2025 All Rights Reserved</p>
+  </div>
+</footer>
+
+
+
+
+
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
